@@ -1,46 +1,37 @@
 <?php
+namespace GoGetSSL;
 
-/**
- * Use any way you want. Free for all
- *
- * @version 1.1
- * */
-error_reporting(E_ALL);
-ini_set('display_errors', 'on');
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-define('DEBUG', 'TRUE');
-
-//define('DEBUG', 'FALSE');
-
-class GoGetSSLApi {
-
+class Api
+{
     protected $apiUrl = 'https://my.gogetssl.com/api';
     protected $key;
     protected $lastStatus;
     protected $lastResponse;
 
-    public function __construct($key = null, $apiUrl = null) {
+    public function __construct($key = null, $apiUrl = null)
+    {
         $this->key = isset($key) ? $key : null;
     }
 
-    public function auth($user, $pass) {
+    public function auth($user, $pass)
+    {
         $response = $this->call('/auth/', array(), array(
             'user' => $user,
             'pass' => $pass
-                ));
+        ));
 
-        if (!empty($response ['key'])) {
-            $this->key = $response ['key'];
+        if (!empty($response['key'])) {
+            $this->key = $response['key'];
             return $response;
         }
 
         return false;
     }
 
-    public function addSslSan($orderId, $count) {
+    public function addSslSan($orderId, $count)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -48,30 +39,32 @@ class GoGetSSLApi {
         }
 
         if ($count) {
-            $postData ['order_id'] = $orderId;
-            $postData ['count'] = $count;
+            $postData['order_id'] = $orderId;
+            $postData['count'] = $count;
         }
 
         return $this->call('/orders/add_ssl_san_order/', $getData, $postData);
     }
 
-    public function cancelSSLOrder($orderId, $reason) {
+    public function cancelSSLOrder($orderId, $reason)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
             );
         }
-        $postData ['order_id'] = $orderId;
-        $postData ['reason'] = $reason;
+        $postData['order_id'] = $orderId;
+        $postData['reason'] = $reason;
 
         return $this->call('/orders/cancel_ssl_order/', $getData, $postData);
     }
 
-    public function changeDcv($orderId, $data) {
+    public function changeDcv($orderId, $data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -80,9 +73,10 @@ class GoGetSSLApi {
         return $this->call('/orders/ssl/change_dcv/' . (int) $orderId, $getData, $data);
     }
 
-    public function changeValidationEmail($orderId, $data) {
+    public function changeValidationEmail($orderId, $data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -92,13 +86,15 @@ class GoGetSSLApi {
         return $this->call('/orders/ssl/change_validation_email/' . (int) $orderId, $getData, $data);
     }
 
-    public function setKey($key) {
+    public function setKey($key)
+    {
         if ($key) {
             $this->key = $key;
         }
     }
 
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         $this->apiUrl = $url;
     }
 
@@ -106,9 +102,10 @@ class GoGetSSLApi {
      * Decode CSR
      */
 
-    public function decodeCSR($csr, $brand = 1, $wildcard = 0) {
+    public function decodeCSR($csr, $brand = 1, $wildcard = 0)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -116,9 +113,9 @@ class GoGetSSLApi {
         }
 
         if ($csr) {
-            $postData ['csr'] = $csr;
-            $postData ['brand'] = $brand;
-            $postData ['wildcard'] = $wildcard;
+            $postData['csr'] = $csr;
+            $postData['brand'] = $brand;
+            $postData['wildcard'] = $wildcard;
         }
 
         return $this->call('/tools/csr/decode/', $getData, $postData);
@@ -128,9 +125,10 @@ class GoGetSSLApi {
      * Get Domain Emails List
      */
 
-    public function getWebServers($type) {
+    public function getWebServers($type)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -139,17 +137,18 @@ class GoGetSSLApi {
 
         return $this->call('/tools/webservers/' . (int) $type, $getData);
     }
-    
-    public function getDomainAlternative($csr = null) {
+
+    public function getDomainAlternative($csr = null)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
             );
         }
 
-        $postData ['csr'] = $csr;
+        $postData['csr'] = $csr;
 
         return $this->call('/tools/domain/alternative/', $getData, $postData);
     }
@@ -158,9 +157,10 @@ class GoGetSSLApi {
      * Get Domain Emails List
      */
 
-    public function getDomainEmails($domain) {
+    public function getDomainEmails($domain)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -168,15 +168,16 @@ class GoGetSSLApi {
         }
 
         if ($domain) {
-            $postData ['domain'] = $domain;
+            $postData['domain'] = $domain;
         }
 
         return $this->call('/tools/domain/emails/', $getData, $postData);
     }
 
-    public function getDomainEmailsForGeotrust($domain) {
+    public function getDomainEmailsForGeotrust($domain)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -184,7 +185,7 @@ class GoGetSSLApi {
         }
 
         if ($domain) {
-            $postData ['domain'] = $domain;
+            $postData['domain'] = $domain;
         }
 
         return $this->call('/tools/domain/emails/geotrust', $getData, $postData);
@@ -193,11 +194,12 @@ class GoGetSSLApi {
     /**
      * @deprecated
      * @return mixed
-     * @throws GoGetSSLAuthException
+     * @throws AuthException
      */
-    public function getAllProductPrices() {
+    public function getAllProductPrices()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -210,11 +212,12 @@ class GoGetSSLApi {
     /**
      * @deprecated
      * @return mixed
-     * @throws GoGetSSLAuthException
+     * @throws AuthException
      */
-    public function getAllProducts() {
+    public function getAllProducts()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -223,10 +226,11 @@ class GoGetSSLApi {
 
         return $this->call('/products/', $getData);
     }
-    
-    public function getProduct($productId) {
+
+    public function getProduct($productId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -235,10 +239,11 @@ class GoGetSSLApi {
 
         return $this->call('/products/ssl/' . $productId, $getData);
     }
-    
-    public function getProducts() {
+
+    public function getProducts()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -252,11 +257,12 @@ class GoGetSSLApi {
      * @deprecated
      * @param int $productId
      * @return array
-     * @throws GoGetSSLAuthException
+     * @throws AuthException
      */
-    public function getProductDetails($productId) {
+    public function getProductDetails($productId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -270,11 +276,12 @@ class GoGetSSLApi {
      * @deprecated
      * @param int $productId
      * @return array
-     * @throws GoGetSSLAuthException
+     * @throws AuthException
      */
-    public function getProductPrice($productId) {
+    public function getProductPrice($productId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -284,9 +291,10 @@ class GoGetSSLApi {
         return $this->call('/products/price/' . $productId, $getData);
     }
 
-    public function getUserAgreement($productId) {
+    public function getUserAgreement($productId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -296,9 +304,10 @@ class GoGetSSLApi {
         return $this->call('/products/agreement/' . $productId, $getData);
     }
 
-    public function getAccountBalance() {
+    public function getAccountBalance()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -308,9 +317,10 @@ class GoGetSSLApi {
         return $this->call('/account/balance/', $getData);
     }
 
-    public function getAccountDetails() {
+    public function getAccountDetails()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -320,9 +330,10 @@ class GoGetSSLApi {
         return $this->call('/account/', $getData);
     }
 
-    public function getTotalOrders() {
+    public function getTotalOrders()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -332,9 +343,10 @@ class GoGetSSLApi {
         return $this->call('/account/total_orders/', $getData);
     }
 
-    public function getAllInvoices() {
+    public function getAllInvoices()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -344,9 +356,10 @@ class GoGetSSLApi {
         return $this->call('/account/invoices/', $getData);
     }
 
-    public function getUnpaidInvoices() {
+    public function getUnpaidInvoices()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -356,9 +369,10 @@ class GoGetSSLApi {
         return $this->call('/account/invoices/unpaid/', $getData);
     }
 
-    public function getTotalTransactions() {
+    public function getTotalTransactions()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -368,9 +382,10 @@ class GoGetSSLApi {
         return $this->call('/account/total_transactions/', $getData);
     }
 
-    public function addSSLOrder1($data) {
+    public function addSSLOrder1($data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -379,10 +394,11 @@ class GoGetSSLApi {
 
         return $this->call('/orders/add_ssl_order1/', $getData, $data);
     }
-    
-    public function addSSLOrder($data) {
+
+    public function addSSLOrder($data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -392,9 +408,10 @@ class GoGetSSLApi {
         return $this->call('/orders/add_ssl_order/', $getData, $data);
     }
 
-    public function addSSLRenewOrder($data) {
+    public function addSSLRenewOrder($data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -404,9 +421,10 @@ class GoGetSSLApi {
         return $this->call('/orders/add_ssl_renew_order/', $getData, $data);
     }
 
-    public function reIssueOrder($orderId, $data) {
+    public function reIssueOrder($orderId, $data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -416,9 +434,10 @@ class GoGetSSLApi {
         return $this->call('/orders/ssl/reissue/' . (int) $orderId, $getData, $data);
     }
 
-    public function activateSSLOrder($orderId) {
+    public function activateSSLOrder($orderId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -427,22 +446,24 @@ class GoGetSSLApi {
 
         return $this->call('/orders/ssl/activate/' . (int) $orderId, $getData);
     }
-    
-    public function addSandboxAccount($data) {
+
+    public function addSandboxAccount($data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
             );
         }
 
-        return $this->call('/accounts/sandbox/add/', $getData, $data);        
+        return $this->call('/accounts/sandbox/add/', $getData, $data);
     }
 
-    public function getOrderStatus($orderId) {
+    public function getOrderStatus($orderId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -452,9 +473,10 @@ class GoGetSSLApi {
         return $this->call('/orders/status/' . (int) $orderId, $getData);
     }
 
-    public function comodoClaimFreeEV($orderId, $data) {
+    public function comodoClaimFreeEV($orderId, $data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -464,9 +486,10 @@ class GoGetSSLApi {
         return $this->call('/orders/ssl/comodo_claim_free_ev/' . (int) $orderId, $getData, $data);
     }
 
-    public function getOrderInvoice($orderId) {
+    public function getOrderInvoice($orderId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -476,9 +499,10 @@ class GoGetSSLApi {
         return $this->call('/orders/invoice/' . (int) $orderId, $getData);
     }
 
-    public function getUnpaidOrders() {
+    public function getUnpaidOrders()
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -488,9 +512,10 @@ class GoGetSSLApi {
         return $this->call('/orders/list/unpaid/', $getData);
     }
 
-    public function resendEmail($orderId) {
+    public function resendEmail($orderId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -499,9 +524,10 @@ class GoGetSSLApi {
         return $this->call('/orders/ssl/resend_validation_email/' . (int) $orderId, $getData);
     }
 
-    public function resendValidationEmail($orderId) {
+    public function resendValidationEmail($orderId)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -511,9 +537,10 @@ class GoGetSSLApi {
         return $this->call('/orders/ssl/resend_validation_email/' . (int) $orderId, $getData);
     }
 
-    public function getCSR($data) {
+    public function getCSR($data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -523,9 +550,10 @@ class GoGetSSLApi {
         return $this->call('/tools/csr/get/', $getData, $data);
     }
 
-    public function generateCSR($data) {
+    public function generateCSR($data)
+    {
         if (!$this->key) {
-            throw new GoGetSSLAuthException ();
+            throw new AuthException();
         } else {
             $getData = array(
                 'auth_key' => $this->key
@@ -535,7 +563,8 @@ class GoGetSSLApi {
         return $this->call('/tools/csr/generate/', $getData, $data);
     }
 
-    protected function call($uri, $getData = array(), $postData = array(), $forcePost = false, $isFile = false) {        
+    protected function call($uri, $getData = array(), $postData = array(), $forcePost = false, $isFile = false)
+    {
         $url = $this->apiUrl . $uri;
         if (!empty($getData)) {
             foreach ($getData as $key => $value) {
@@ -583,20 +612,13 @@ class GoGetSSLApi {
         return $this->lastResponse;
     }
 
-    public function getLastStatus() {
+    public function getLastStatus()
+    {
         return $this->lastStatus;
     }
 
-    public function getLastResponse() {
+    public function getLastResponse()
+    {
         return $this->lastResponse;
     }
-
-}
-
-class GoGetSSLAuthException extends Exception {
-
-    public function __construct() {
-        parent::__construct('Please authorize first');
-    }
-
 }

@@ -1,0 +1,16 @@
+{
+    "name": "gogetssl/sdk",
+    "description": "GoGetSSL SDK for PHP in composer",
+    "authors": [
+        {
+            "name": "xiaohui.lam",
+            "email": "xiaohui.lam@aliyun.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.6"
+    },
+    "autoload": {
+        "GoGetSSL\\": "src/"
+    }
+}

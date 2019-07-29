@@ -1,5 +1,4 @@
-![alt text](https://my.gogetssl.com/assets/img/logo_for_github.png "Logo Title Text 1")
-# GOGETSSL API Documentation
+# 𝑮𝒐𝑮𝒆𝒕𝑺𝑺𝑳 𝑺𝒅𝒌 𝒇𝒐𝒓 𝑷𝑯𝑷 𝑪𝒐𝒎𝒑𝒐𝒔𝒆𝒓
 Order and manage SSL certificates, Seals & Scanners using our API.
 
 ### Overview
@@ -7,6 +6,11 @@ We offer a REST Request Format API with JavaScript Object Notation (JSON) respon
 partners to directly order and manage their SSL certificates. API clients can
 perform functions such as ordering the different products, canceling and fulfilling orders, and
 querying for order data, querying for account details data. 
+
+### Installation
+```bash
+composer require gogetssl/sdk
+```
 
 ### API
 URL: https://my.gogetssl.com/api/
