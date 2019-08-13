@@ -589,22 +589,6 @@ class Api
 
         $result = curl_exec($c);
 
-        if (DEBUG == 'TRUE') {
-            echo "\n\n";
-            echo "===============\n";
-            echo __FILE__ . "\n";
-            echo "===============\n\n";
-            echo "url = " . $url . "\n\n";
-            echo "queryData = " . urldecode($queryData) . "\n\n";
-            echo "getData = \n";
-            print_r($getData) . "\n\n";
-            echo "postData = \n";
-            print_r($postData) . "\n\n";
-            echo "result GoGetSslApi = \n";
-            print_r(json_decode($result, true));
-            echo "\n\n";
-        }
-
         $status = curl_getinfo($c, CURLINFO_HTTP_CODE);
         curl_close($c);
         $this->lastStatus = $status;
