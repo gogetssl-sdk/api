@@ -397,6 +397,7 @@ class Api
 
     public function addSSLOrder($data)
     {
+        logger()->info('LOG_TEST', $data);
         if (!$this->key) {
             throw new AuthException();
         } else {
@@ -510,6 +511,22 @@ class Api
         }
 
         return $this->call('/orders/list/unpaid/', $getData);
+    }
+
+    public function revalidate($orderId, $domain)
+    {
+        if (!$this->key) {
+            throw new AuthException();
+        } else {
+            $getData = array(
+                'auth_key' => $this->key
+            );
+        }
+
+        $data = [
+            'domain' => $domain,
+        ];
+        return $this->call('/orders/ssl/revalidate/' . (int) $orderId, $getData, $data);
     }
 
     public function resendEmail($orderId)
